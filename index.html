@@ -179,7 +179,12 @@ button{cursor:pointer;letter-spacing:-.25px}
 .profile-open-btn{border:1px solid var(--line);background:white;color:#52616b;border-radius:4px;padding:6px 9px;font-size:12px}
 .profile-modal-backdrop{position:fixed;inset:0;background:rgba(24,40,50,.48);display:flex;align-items:center;justify-content:center;padding:18px;z-index:50}
 .profile-modal-backdrop[hidden]{display:none}
-.profile-modal{width:min(100%,440px);max-height:90vh;overflow:auto;background:#fff;border-radius:8px;padding:20px;box-shadow:0 18px 60px rgba(0,0,0,.22)}
+.profile-modal{width:min(100%,440px);max-height:90vh;overflow:hidden;background:#fff;border-radius:12px;padding:0;box-shadow:0 18px 60px rgba(0,0,0,.22)}
+.profile-modal-scroll{max-height:90vh;overflow-y:auto;overflow-x:hidden;margin-right:8px;padding:20px 12px 20px 20px;border-radius:inherit;scrollbar-width:thin;scrollbar-color:#c5d2d9 transparent}
+.profile-modal-scroll::-webkit-scrollbar{width:8px}
+.profile-modal-scroll::-webkit-scrollbar-track{background:transparent;border-radius:12px}
+.profile-modal-scroll::-webkit-scrollbar-thumb{background:#c5d2d9;border:2px solid #fff;border-radius:12px}
+.profile-modal-scroll::-webkit-scrollbar-thumb:hover{background:#b7c7d0}
 .profile-modal-heading{display:flex;justify-content:space-between;align-items:center;font-size:18px;margin-bottom:8px}
 .profile-modal-heading button{border:0;background:transparent;font-size:26px;color:#81919c}
 .profile-modal-help{font-size:13px;line-height:1.6;color:#6e7f8a;margin:0 0 16px}
@@ -326,6 +331,7 @@ button{cursor:pointer;letter-spacing:-.25px}
 </div>
 <div class="profile-modal-backdrop" id="profileModal" hidden>
   <section class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle">
+    <div class="profile-modal-scroll">
     <div class="profile-modal-heading"><strong id="profileModalTitle">내 프로필 설정</strong><button type="button" id="profileClose" aria-label="닫기">×</button></div>
     <p class="profile-modal-help">이 브라우저에서 사용할 작성자 프로필이야. 아이디와 표시 이름은 이전 쓰윗에도 일괄 적용돼.</p>
     <label>개인 헤더 색상</label>
@@ -374,6 +380,7 @@ button{cursor:pointer;letter-spacing:-.25px}
     <label for="profileBio">자기소개</label>
     <textarea id="profileBio" maxlength="160" rows="3" placeholder="나를 소개하는 한마디"></textarea>
     <div class="profile-modal-actions profile-modal-actions-reset"><button type="button" class="small-btn reset-profile-btn" id="profileReset">프로필 설정 초기화</button><span class="profile-actions-spacer"></span><button type="button" class="small-btn" id="profileCancel">취소</button><button type="button" class="primary" id="profileSave">저장하기</button></div>
+    </div>
   </section>
 </div>
 <div class="toast" id="toast"></div>
