@@ -232,6 +232,17 @@ button{cursor:pointer;letter-spacing:-.25px}
  .chart-date{font-size:9px}
 }
 
+/* 모바일에서는 PC용 사이드바 독립 스크롤을 해제해 페이지 전체가 자연스럽게 스크롤되도록 함 */
+@media (max-width:720px){
+  .sidebar{
+    position:static;
+    top:auto;
+    max-height:none;
+    height:auto;
+    overflow:visible;
+    overscroll-behavior:auto;
+  }
+}
 </style>
 </head>
 <body>
