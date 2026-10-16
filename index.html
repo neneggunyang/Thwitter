@@ -737,7 +737,7 @@ button{cursor:pointer;letter-spacing:-.25px}
     if(!visiblePosts.length){
       let message = threadViewId ? '이 쓰레드를 찾을 수 없어.' : activeView==='today' ? '오늘 작성한 쓰윗이 아직 없어.' : activeView==='index' ? '아직 찾을 쓰윗이 없어.' : '아직 쓰윗이 없어.';
       let sub = threadViewId ? '원래 타임라인에서 쓰레드가 삭제됐거나 주소가 올바르지 않아.' : activeView==='today' ? '오늘의 첫 쓰윗을 올려 봐.' : activeView==='index' && indexQuery.trim() ? '다른 단어로 검색해 봐.' : activeView==='index' ? '쓰윗을 검색하거나 탐색에서 찾아봐.' : '첫 쓰윗을 올려 봐. 아무거나 뭐 어때.';
-      const emptyIcon = activeView==='today' ? '🕳️' : activeView==='index' ? '🔎' : (activeView==='timeline' && !threadViewId ? '✒️' : '🐦');
+      const emptyIcon = threadViewId ? '🕸️' : activeView==='today' ? '🕳️' : activeView==='index' ? '🔎' : '✒️';
       feed.innerHTML=`<div class="empty"><div class="empty-icon">${emptyIcon}</div><strong>${message}</strong><p>${sub}</p></div>`;
       return;
     }
