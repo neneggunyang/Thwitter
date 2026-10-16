@@ -31,8 +31,8 @@ button{cursor:pointer;letter-spacing:-.25px}
 .profile-card,.composer,.feed-card,.stats-card{background:var(--white);border:1px solid var(--line);border-radius:5px}
 .profile-banner{height:72px;background:linear-gradient(120deg,#55c2ec,#1687bd)}
 .profile-body{padding:0 15px 16px}
-.avatar{width:54px;height:54px;margin-top:-27px;border:3px solid white;border-radius:50%;background:#eaf7fd;display:grid;place-items:center;font-size:36px}
-.profile-name{font-weight:700;margin-top:7px;font-size:17px}
+.avatar{width:54px;height:54px;margin-top:-27px;border:3px solid white;border-radius:7px;background:#eaf7fd;display:grid;place-items:center;font-size:36px}
+.profile-name{font-weight:700;margin-top:7px;font-size:17px;display:flex;align-items:center;gap:5px}.verified-badge{display:inline-flex;width:16px;height:16px;flex:0 0 16px;vertical-align:middle;align-items:center;justify-content:center}.verified-badge svg{display:block;width:100%;height:100%}.post-author-line{display:inline-flex;align-items:center;gap:4px}.post-author-line .verified-badge{width:14px;height:14px;flex-basis:14px}
 .profile-handle{color:var(--muted);font-size:14px}
 .profile-bio{font-size:14px;margin:12px 0 0;color:#52616b}
 .stats-card{margin-top:8px;padding:10px 11px}
@@ -47,7 +47,7 @@ button{cursor:pointer;letter-spacing:-.25px}
 .page-heading span{font-size:12px;color:var(--muted)}
 .composer{padding:15px;margin-bottom:12px}
 .composer-top{display:flex;gap:11px}
-.mini-avatar{flex:0 0 40px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--blue-pale);font-size:29px}
+.mini-avatar{flex:0 0 40px;width:40px;height:40px;border-radius:6px;display:grid;place-items:center;background:var(--blue-pale);font-size:29px}
 .composer textarea{width:100%;border:0;resize:none;overflow-y:hidden;min-height:76px;height:76px;max-height:none;outline:none;color:var(--ink);line-height:1.65;background:transparent;box-sizing:border-box}
 .composer textarea::placeholder{color:#9aaab5}
 .composer-bottom{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #edf1f4;padding-top:10px;margin-top:8px;gap:10px}
@@ -92,13 +92,15 @@ button{cursor:pointer;letter-spacing:-.25px}
 .date-divider{padding:8px 15px;background:#f4f9fc;color:#607785;border-bottom:1px solid var(--line);font-size:12px;font-weight:700}
 .toolbar{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:#fff;border:1px solid var(--line);border-bottom:0;border-radius:5px 5px 0 0}
 .toolbar-title{font-weight:700;font-size:14px}
-.toolbar-actions{display:flex;gap:7px}
+.toolbar-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.bookmark-tools{display:none;align-items:center;gap:6px;flex-wrap:wrap}.bookmark-tools.visible{display:flex}.bookmark-tools select{max-width:150px;border:1px solid var(--line);background:#fff;border-radius:4px;padding:5px 7px;color:#52616b;font-size:12px}
 .small-btn{border:1px solid var(--line);background:white;color:#52616b;border-radius:4px;padding:5px 8px;font-size:12px;letter-spacing:-.35px}
+.post-actions button.bookmark-active{border-color:#9acfe4;background:#eef9fd;color:#167da8;font-weight:700;box-shadow:inset 0 0 0 1px #d7eef7}
 .small-btn:hover{background:var(--blue-pale);border-color:#b8e2f5}
 .feed-card{border-radius:0 0 5px 5px;overflow:hidden}
 .post{padding:14px 15px 12px;display:flex;gap:11px;border-bottom:1px solid var(--line);background:#fff}
 .post:last-child{border-bottom:0}
-.post-avatar{flex:0 0 40px;width:40px;height:40px;border-radius:50%;background:#eaf7fd;display:grid;place-items:center;font-size:29px}
+.post-avatar{flex:0 0 40px;width:40px;height:40px;border-radius:6px;background:#eaf7fd;display:grid;place-items:center;font-size:29px}
 .post-content{min-width:0;flex:1}
 .post-meta{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;font-size:14px}
 .post-author{font-weight:700;color:#292f33}.post-handle,.post-time{color:var(--muted)}
@@ -303,6 +305,7 @@ button{cursor:pointer;letter-spacing:-.25px}
       <button class="view-tab active" data-view="timeline" aria-selected="true">전체 타임라인</button>
       <button class="view-tab" data-view="today" aria-selected="false">오늘의 쓰윗</button>
       <button class="view-tab" data-view="index" aria-selected="false">탐색</button>
+      <button class="view-tab" data-view="bookmarks" aria-selected="false">북마크</button>
     </nav>
     <div class="index-search" id="indexSearch">
       <input id="indexQuery" type="search" placeholder="쓰윗 내용 또는 단어 검색..." aria-label="쓰윗 검색">
@@ -310,7 +313,8 @@ button{cursor:pointer;letter-spacing:-.25px}
     <div class="timeline-scroll">
     <div class="toolbar">
       <div class="toolbar-title">최근 쓰윗 <span id="postTotal" style="color:#8899a6;font-weight:400">(0)</span></div>
-      <div class="toolbar-actions"><button class="small-btn" id="backupBtn">전체 데이터 백업</button><button class="small-btn" id="restoreBtn">백업 불러오기</button><button class="small-btn" id="clearBtn">전체 비우기</button><input id="restoreInput" type="file" accept=".json,application/json" hidden></div>
+      <div class="bookmark-tools" id="bookmarkTools"><select id="bookmarkFolderFilter" aria-label="북마크 폴더 선택"><option value="all">모든 폴더</option></select><button class="small-btn" id="createBookmarkFolder">＋ 폴더</button><button class="small-btn" id="manageBookmarkFolders">폴더 관리</button></div>
+      <div class="toolbar-actions"><button class="small-btn" id="backupBtn">전체 데이터 백업</button><button class="small-btn" id="restoreBtn">백업 불러오기</button><button class="small-btn" id="clearBtn">쓰윗 청소</button><input id="restoreInput" type="file" accept=".json,application/json" hidden></div>
     </div>
     <section class="feed-card" id="feed" aria-live="polite"></section>
     </div>
@@ -334,6 +338,7 @@ button{cursor:pointer;letter-spacing:-.25px}
     <div class="welcome-guide-item"><div class="welcome-guide-icon">🧵</div><div><strong>쓰레드 — 글을 이어 붙이기</strong><p>140자가 부족하다면 딸린 쓰윗으로 이어 써 봐. 흩어진 생각을 하나의 흐름으로 연결할 수 있어.</p></div></div>
     <div class="welcome-guide-item"><div class="welcome-guide-icon">🗂️</div><div><strong>모아 보고, 꺼내 쓰기</strong><p>타임라인과 탐색에서 예전 쓰윗을 찾아봐. 쓰레드는 텍스트 파일로 저장하고, 전체 기록은 백업할 수 있어.</p></div></div>
     <div class="welcome-guide-item"><div class="welcome-guide-icon">📊</div><div><strong>기록은 쌓이고, 글은 자라나고</strong><p>오늘의 집필 기록과 날짜별 통계로 내가 얼마나 써 왔는지 살펴봐. 작은 기록도 모이면 창작의 흔적이 돼.</p></div></div>
+    <div class="welcome-guide-item"><div class="welcome-guide-icon">❤️</div><div><strong>좋아요와 리쓰윗 — 가상의 반응 수</strong><p>쓰윗에 표시되는 좋아요와 리쓰윗 숫자는 실제 이용자 반응이나 공유 횟수가 아니라, 글이 얼마나 주목받았을지 상상해 보는 재미를 위한 가상 수치야. 대부분은 소소하지만, 가끔은 수백·수천 단위로 크게 퍼지는 쓰윗도 있어!</p></div></div>
     <div class="welcome-guide-item"><div class="welcome-guide-icon">🔥</div><div><strong>실시간 쓰렌드 — 자주 쓰는 단어 발견하기</strong><p>내가 쓴 쓰윗에서 자주 등장하는 단어를 모아 보여줘. 단어를 누르면 관련 쓰윗을 찾아볼 수 있어.</p></div></div>
     <div class="welcome-guide-item"><div class="welcome-guide-icon">#️⃣</div><div><strong>해시태그 — 주제별로 쓰윗 모아 보기</strong><p>쓰윗에 #작업중, #아이디어처럼 해시태그를 붙여 봐. 자주 사용한 태그를 모아 보고, 태그를 눌러 관련 쓰윗을 찾아볼 수 있어.</p></div></div>
     <p class="welcome-guide-foot">완벽하게 쓰려고 애쓰지 않아도 괜찮아. 오늘 떠오른 한 문장부터 차곡차곡 모아 보자. ✨</p>
@@ -385,6 +390,7 @@ button{cursor:pointer;letter-spacing:-.25px}
     </div>
     <label for="profileName">표시 이름</label>
     <input id="profileName" maxlength="40" placeholder="예: 오늘의 작가">
+    <label class="verified-setting"><input type="checkbox" id="profileVerified" style="width:auto;margin-right:7px;vertical-align:middle"> 인증 계정으로 표시 <span class="verified-badge" aria-hidden="true"><svg viewBox="0 0 100 100"><defs><linearGradient id="verifiedGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#79d9ec"/><stop offset="1" stop-color="#1687d8"/></linearGradient></defs><path fill="url(#verifiedGrad)" d="M50 2 61 13 76 8 82 23 97 29 92 44 99 57 87 68 88 84 72 87 63 98 50 90 37 98 28 87 12 84 13 68 1 57 8 44 3 29 18 23 24 8 39 13Z"/><path d="M27 51 43 67 74 34" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="square" stroke-linejoin="miter"/></svg></span> <span class="profile-field-hint" style="display:inline">닉네임 옆에 파란 체크 표시가 붙어.</span></label>
     <label for="profileHandle">아이디</label>
     <div class="handle-input"><span>@</span><input id="profileHandle" maxlength="20" placeholder="my_writing_timeline" autocomplete="off"></div>
     <p class="profile-field-hint">영문 소문자, 숫자, 밑줄(_)만 사용할 수 있어.</p>
@@ -394,28 +400,67 @@ button{cursor:pointer;letter-spacing:-.25px}
     </div>
   </section>
 </div>
+<div class="profile-modal-backdrop" id="bookmarkSaveModal" hidden>
+  <section class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="bookmarkSaveTitle">
+    <div class="profile-modal-scroll">
+      <div class="profile-modal-heading"><strong id="bookmarkSaveTitle">쓰윗을 어느 폴더에 저장할까?</strong><button type="button" id="bookmarkSaveClose" aria-label="닫기">×</button></div>
+      <p class="profile-modal-help">만들어 둔 폴더를 선택해 줘. 새 폴더가 필요할 때만 폴더 이름을 입력하면 돼.</p>
+      <label for="bookmarkSaveFolder">저장할 폴더</label>
+      <select id="bookmarkSaveFolder" style="width:100%;margin:8px 0 14px;padding:10px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);"></select>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+        <button type="button" class="small-btn" id="bookmarkSaveNewFolder">＋ 새 폴더 만들기</button>
+        <button type="button" class="small-btn" id="bookmarkSaveCancel">취소</button>
+        <button type="button" class="small-btn primary-btn" id="bookmarkSaveConfirm">이 폴더에 저장</button>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="profile-modal-backdrop" id="bookmarkManageModal" hidden>
+  <section class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="bookmarkManageTitle">
+    <div class="profile-modal-scroll">
+      <div class="profile-modal-heading"><strong id="bookmarkManageTitle">북마크 폴더 관리</strong><button type="button" id="bookmarkManageClose" aria-label="닫기">×</button></div>
+      <p class="profile-modal-help">폴더 이름을 바꾸거나 삭제할 수 있어. 폴더를 삭제하면 그 안의 쓰윗 북마크도 함께 해제돼.</p>
+      <label for="bookmarkManageFolder">관리할 폴더</label>
+      <select id="bookmarkManageFolder" style="width:100%;margin:8px 0 14px;padding:10px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);"></select>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+        <button type="button" class="small-btn" id="bookmarkRenameFolder">✏️ 이름 변경</button>
+        <button type="button" class="small-btn" id="bookmarkDeleteFolder">🗑️ 폴더 삭제</button>
+        <button type="button" class="small-btn" id="bookmarkManageDone">닫기</button>
+      </div>
+    </div>
+  </section>
+</div>
 <div class="toast" id="toast"></div>
 <script>
 (() => {
   const KEY = 'tarae-writing-timeline-v1';
+  const BOOKMARK_KEY = 'tarae-writing-bookmarks-v1';
+  const BOOKMARK_FOLDER_KEY = 'tarae-writing-bookmark-folders-v1';
   const input = document.getElementById('postInput');
   const counter = document.getElementById('counter');
   const publishBtn = document.getElementById('publishBtn');
   const feed = document.getElementById('feed');
   const composerHelp = document.getElementById('composerHelp');
   let posts = [];
+  let bookmarks = [];
+  let bookmarkFolders = ['기본 폴더'];
+  let bookmarkFolderFilter = 'all';
+  try { const raw=JSON.parse(localStorage.getItem(BOOKMARK_KEY)||'[]'); if(Array.isArray(raw)) bookmarks=raw.filter(x=>x&&typeof x.postId==='string'&&typeof x.folder==='string'); } catch(e) {}
+  try { const raw=JSON.parse(localStorage.getItem(BOOKMARK_FOLDER_KEY)||'null'); if(Array.isArray(raw)) bookmarkFolders=[...new Set(raw.filter(x=>typeof x==='string'&&x.trim()).map(x=>x.trim()))]; } catch(e) {}
+  if(!bookmarkFolders.length) bookmarkFolders=['기본 폴더'];
   let editingId = null;
   let replyToId = null;
   let inlineReplyToId = null;
   let inlineEditId = null;
   try { posts = JSON.parse(localStorage.getItem(KEY) || '[]'); if (!Array.isArray(posts)) posts = []; } catch(e) { posts = []; }
   const PROFILE_KEY = 'tarae-writing-profile-v1';
-  const DEFAULT_PROFILE = { name:'오늘의 작가', handle:'my_writing_timeline', emoji:'🧶', avatarMode:'thread', avatarText:'', avatarBg:'#eaf7fd', avatarFg:'#1687bd', bio:'완벽하게 쓰려고 멈추지 말고,\n일단 한 편씩 올려 보기.', headerColor:'#2aa9e0', headerMode:'gradient', headerStart:'#55c2ec', headerEnd:'#1687bd', headerSolid:'#2aa9e0' };
+  const DEFAULT_PROFILE = { name:'오늘의 작가', handle:'my_writing_timeline', emoji:'🧶', avatarMode:'thread', avatarText:'', avatarBg:'#eaf7fd', avatarFg:'#1687bd', bio:'완벽하게 쓰려고 멈추지 말고,\n일단 한 편씩 올려 보기.', headerColor:'#2aa9e0', headerMode:'gradient', headerStart:'#55c2ec', headerEnd:'#1687bd', headerSolid:'#2aa9e0', verified:false };
   let profile = {...DEFAULT_PROFILE};
   try {
     const savedProfile = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
     if(savedProfile && typeof savedProfile === 'object'){
       profile = {
+        verified: savedProfile.verified === true,
         name: typeof savedProfile.name === 'string' && savedProfile.name.trim() ? savedProfile.name.trim() : DEFAULT_PROFILE.name,
         handle: typeof savedProfile.handle === 'string' && savedProfile.handle.trim() ? savedProfile.handle.trim().replace(/^@/,'').toLowerCase() : DEFAULT_PROFILE.handle,
         emoji: typeof savedProfile.emoji === 'string' && savedProfile.emoji.trim() ? savedProfile.emoji.trim() : DEFAULT_PROFILE.emoji,
@@ -438,6 +483,7 @@ button{cursor:pointer;letter-spacing:-.25px}
     return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
   }
   function persistProfile(){ localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); }
+  function verifiedBadgeMarkup(){return '<span class="verified-badge" title="인증 계정" aria-label="인증 계정"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="verifiedGradInline" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#79d9ec"/><stop offset="1" stop-color="#1687d8"/></linearGradient></defs><path fill="url(#verifiedGradInline)" d="M50 2 61 13 76 8 82 23 97 29 92 44 99 57 87 68 88 84 72 87 63 98 50 90 37 98 28 87 12 84 13 68 1 57 8 44 3 29 18 23 24 8 39 13Z"/><path d="M27 51 43 67 74 34" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="square" stroke-linejoin="miter"/></svg></span>';}
   function avatarDisplay(){
     if(profile.avatarMode==='thread') return '🧶';
     if(profile.avatarMode==='text') return [...(profile.avatarText||'')].slice(0,4).join('') || '✦';
@@ -464,7 +510,8 @@ button{cursor:pointer;letter-spacing:-.25px}
     }
   }
   function applyProfile(){
-    document.querySelectorAll('.profile-name,.post-author').forEach(el=>el.textContent=profile.name);
+    document.querySelectorAll('.profile-name').forEach(el=>{el.replaceChildren(document.createTextNode(profile.name));if(profile.verified)el.insertAdjacentHTML('beforeend',verifiedBadgeMarkup());});
+    document.querySelectorAll('.post-author').forEach(el=>{el.textContent=profile.name;const badge=el.parentElement.querySelector('.verified-badge');if(badge)badge.remove();if(profile.verified)el.insertAdjacentHTML('afterend',verifiedBadgeMarkup());});
     document.querySelectorAll('.profile-handle,.post-handle').forEach(el=>el.textContent='@'+profile.handle);
     document.querySelectorAll('.avatar,.mini-avatar,.post-avatar').forEach(applyAvatar);
     const bio=document.querySelector('.profile-bio');
@@ -512,16 +559,61 @@ button{cursor:pointer;letter-spacing:-.25px}
     downloadBlob(safeFilename(thread[0].text.slice(0,32)) + '_쓰위터원고.txt', '\ufeff' + text, 'text/plain;charset=utf-8');
     toast('이 쓰레드의 텍스트 원고를 내보냈어.');
   }
-  function randomEngagement(text, timestamp, min, max){
-    // 쓰윗 텍스트와 작성 시각을 섞어 생성해, 새로고침해도 숫자가 바뀌지 않도록 함.
-    let seed = timestamp >>> 0;
-    for (const ch of text) seed = (Math.imul(seed, 31) + ch.codePointAt(0)) >>> 0;
+  function engagementSeed(text, timestamp, salt=''){
+    let seed = (Number(timestamp) >>> 0) ^ 0x9e3779b9;
+    for (const ch of `${text}|${salt}`) seed = (Math.imul(seed, 31) + ch.codePointAt(0)) >>> 0;
     seed ^= (seed << 13); seed >>>= 0;
     seed ^= (seed >>> 17); seed >>>= 0;
     seed ^= (seed << 5); seed >>>= 0;
-    return min + (seed % (max - min + 1));
+    return seed / 4294967296;
+  }
+  function randomEngagement(text, timestamp, min, max){
+    // 반응 수는 가상의 분위기 연출용이며, 게시물마다 고정되어 새로고침해도 바뀌지 않음.
+    const roll = engagementSeed(text, timestamp, max > 20 ? 'likes' : 'reposts');
+    const viral = engagementSeed(text, timestamp, 'viral');
+    let value;
+    if (roll < 0.70) value = Math.floor(engagementSeed(text,timestamp,'small') * 40);
+    else if (roll < 0.91) value = 40 + Math.floor(engagementSeed(text,timestamp,'medium') * 60);
+    else if (roll < 0.975) value = 100 + Math.floor(engagementSeed(text,timestamp,'large') * 400);
+    else if (roll < 0.997) value = 500 + Math.floor(engagementSeed(text,timestamp,'viral-range') * 1500);
+    else value = 2000 + Math.floor(engagementSeed(text,timestamp,'mega-viral') * 8000);
+    // 리쓰윗은 좋아요보다 적게 보이도록 같은 분포를 낮은 규모로 조정.
+    if (max <= 20) value = Math.round(value * (viral < 0.01 ? 0.35 : 0.12));
+    return Math.max(min, value);
+  }
+  function formatEngagement(value){
+    const n = Math.max(0, Number(value) || 0);
+    if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/,'')}K`;
+    return String(Math.floor(n));
+  }
+  // 기존 게시물에도 새 반응 분포를 적용하되, 텍스트·작성 시각을 바탕으로 고정해 일관성을 유지.
+  if(posts.length){
+    posts = posts.map(p => ({...p, likes:randomEngagement(p.text, p.createdAt, 0, 37), reposts:randomEngagement(p.text, p.createdAt, 0, 12)}));
+    try { localStorage.setItem(KEY, JSON.stringify(posts)); } catch(e) {}
   }
   function save(){ localStorage.setItem(KEY, JSON.stringify(posts)); render(); }
+  function saveBookmarks(){ localStorage.setItem(BOOKMARK_KEY,JSON.stringify(bookmarks)); localStorage.setItem(BOOKMARK_FOLDER_KEY,JSON.stringify(bookmarkFolders)); }
+  function isBookmarked(id){return bookmarks.some(b=>b.postId===id);}
+  let bookmarkPendingPostId = null;
+  const bookmarkSaveModal = document.getElementById('bookmarkSaveModal');
+  function toggleBookmark(id){
+    if(isBookmarked(id)){if(!confirm('이 쓰윗을 북마크에서 모두 제거할까?'))return;bookmarks=bookmarks.filter(b=>b.postId!==id);saveBookmarks();render();toast('북마크에서 제거했어.');return;}
+    bookmarkPendingPostId=id;
+    renderBookmarkSaveFolders();
+    bookmarkSaveModal.hidden=false;
+    document.getElementById('bookmarkSaveFolder').focus();
+  }
+  function renderBookmarkSaveFolders(){
+    const sel=document.getElementById('bookmarkSaveFolder');
+    sel.innerHTML=bookmarkFolders.map(f=>`<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+    const preferred=bookmarkFolderFilter!=='all'&&bookmarkFolders.includes(bookmarkFolderFilter)?bookmarkFolderFilter:bookmarkFolders[0];
+    if(preferred)sel.value=preferred;
+  }
+  function closeBookmarkSaveModal(){bookmarkSaveModal.hidden=true;bookmarkPendingPostId=null;}
+  function renderBookmarkFolderFilter(){const sel=document.getElementById('bookmarkFolderFilter');if(!sel)return;const current=bookmarkFolderFilter;sel.innerHTML='<option value="all">모든 폴더</option>'+bookmarkFolders.map(f=>`<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');sel.value=bookmarkFolders.includes(current)||current==='all'?current:'all';}
+  const bookmarkManageModal=document.getElementById('bookmarkManageModal');
+  function renderBookmarkManageFolders(){const sel=document.getElementById('bookmarkManageFolder');sel.innerHTML=bookmarkFolders.map(f=>`<option value="${escapeHtml(f)}">${escapeHtml(f)} · ${bookmarks.filter(b=>b.folder===f).length}개</option>`).join('');sel.disabled=!bookmarkFolders.length;document.getElementById('bookmarkRenameFolder').disabled=!bookmarkFolders.length;document.getElementById('bookmarkDeleteFolder').disabled=!bookmarkFolders.length;if(!bookmarkFolders.length)sel.innerHTML='<option value="">관리할 폴더가 없어</option>'; }
+  function closeBookmarkManageModal(){bookmarkManageModal.hidden=true;}
   let toastTimer;
   function toast(msg){
     const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
@@ -606,6 +698,7 @@ button{cursor:pointer;letter-spacing:-.25px}
       : '이 쓰윗을 삭제할까?';
     if(!confirm(message))return;
     posts=posts.filter(x=>!removed.has(x.id));
+    bookmarks=bookmarks.filter(b=>!removed.has(b.postId));saveBookmarks();
     if(removed.has(editingId))resetComposer();
     if(removed.has(inlineEditId))inlineEditId=null;
     if(removed.has(inlineReplyToId))inlineReplyToId=null;
@@ -723,18 +816,24 @@ button{cursor:pointer;letter-spacing:-.25px}
     const threadRootId = threadViewId ? getThreadRootId(threadViewId) : null;
     let visiblePosts = threadViewId ? getThreadPosts(threadRootId) : [...posts];
     if(!threadViewId && activeView==='today') visiblePosts=visiblePosts.filter(p=>localDay(p.createdAt)===todayKey);
+    if(!threadViewId && activeView==='bookmarks'){
+      const savedIds=new Set(bookmarks.filter(b=>bookmarkFolderFilter==='all'||b.folder===bookmarkFolderFilter).map(b=>b.postId));
+      visiblePosts=posts.filter(p=>savedIds.has(p.id));
+    }
     if(!threadViewId && activeView==='index' && indexQuery.trim()){
       const q=indexQuery.trim().toLocaleLowerCase();
       visiblePosts=visiblePosts.filter(p=>p.text.toLocaleLowerCase().includes(q));
     }
     document.querySelectorAll('.view-tabs, #indexSearch').forEach(el=>el.style.display=threadViewId ? 'none' : '');
+    document.getElementById('bookmarkTools').classList.toggle('visible',!threadViewId&&activeView==='bookmarks');
+    renderBookmarkFolderFilter();
     document.querySelectorAll('.view-tab').forEach(btn=>{
       btn.classList.toggle('active',btn.dataset.view===activeView);
       btn.setAttribute('aria-selected',btn.dataset.view===activeView?'true':'false');
     });
     document.getElementById('indexSearch').classList.toggle('visible',!threadViewId && activeView==='index');
     renderTrends();
-    const heading = threadViewId ? '쓰레드 보기' : activeView==='today' ? '오늘의 쓰윗' : activeView==='index' ? '탐색 결과' : '최근 쓰윗';
+    const heading = threadViewId ? '쓰레드 보기' : activeView==='today' ? '오늘의 쓰윗' : activeView==='index' ? '탐색 결과' : activeView==='bookmarks' ? '북마크' : '최근 쓰윗';
     document.querySelector('.toolbar-title').childNodes[0].textContent=heading+' ';
     let threadNote=document.getElementById('threadViewNote');
     if(threadViewId){
@@ -743,9 +842,9 @@ button{cursor:pointer;letter-spacing:-.25px}
       document.getElementById('backToTimeline').addEventListener('click',goHome);
     }else if(threadNote){threadNote.remove();}
     if(!visiblePosts.length){
-      let message = threadViewId ? '이 쓰레드를 찾을 수 없어.' : activeView==='today' ? '오늘 작성한 쓰윗이 아직 없어.' : activeView==='index' ? '아직 찾을 쓰윗이 없어.' : '아직 쓰윗이 없어.';
-      let sub = threadViewId ? '원래 타임라인에서 쓰레드가 삭제됐거나 주소가 올바르지 않아.' : activeView==='today' ? '오늘의 첫 쓰윗을 올려 봐.' : activeView==='index' && indexQuery.trim() ? '다른 단어로 검색해 봐.' : activeView==='index' ? '쓰윗을 검색하거나 탐색에서 찾아봐.' : '첫 쓰윗을 올려 봐. 아무거나 뭐 어때.';
-      const emptyIcon = threadViewId ? '🕸️' : activeView==='today' ? '🕳️' : activeView==='index' ? '🔎' : '✒️';
+      let message = threadViewId ? '이 쓰레드를 찾을 수 없어.' : activeView==='today' ? '오늘 작성한 쓰윗이 아직 없어.' : activeView==='index' ? '아직 찾을 쓰윗이 없어.' : activeView==='bookmarks' ? '아직 저장한 쓰윗이 없어.' : '아직 쓰윗이 없어.';
+      let sub = threadViewId ? '원래 타임라인에서 쓰레드가 삭제됐거나 주소가 올바르지 않아.' : activeView==='today' ? '오늘의 첫 쓰윗을 올려 봐.' : activeView==='index' && indexQuery.trim() ? '다른 단어로 검색해 봐.' : activeView==='index' ? '쓰윗을 검색하거나 탐색에서 찾아봐.' : activeView==='bookmarks' ? '쓰윗의 북마크 버튼을 눌러 폴더에 저장해 봐.' : '첫 쓰윗을 올려 봐. 아무거나 뭐 어때.';
+      const emptyIcon = threadViewId ? '🕸️' : activeView==='today' ? '🕳️' : activeView==='index' ? '🔎' : activeView==='bookmarks' ? '🔖' : '✒️';
       feed.innerHTML=`<div class="empty"><div class="empty-icon">${emptyIcon}</div><strong>${message}</strong><p>${sub}</p></div>`;
       return;
     }
@@ -761,20 +860,21 @@ button{cursor:pointer;letter-spacing:-.25px}
       <article class="post${threadViewId ? ' in-thread' : ''}" data-id="${escapeHtml(p.id)}">
         <div class="post-avatar">${escapeHtml(avatarDisplay())}</div>
         <div class="post-content">
-          <div class="post-meta"><span class="post-author">${escapeHtml(profile.name)}</span><span class="post-handle">@${escapeHtml(profile.handle)}</span><span class="dot">·</span><time class="post-time">${stamp(p.createdAt)}${p.editedAt?' · 수정됨':''}</time></div>
+          <div class="post-meta"><span class="post-author-line"><span class="post-author">${escapeHtml(profile.name)}</span>${profile.verified?verifiedBadgeMarkup():''}</span><span class="post-handle">@${escapeHtml(profile.handle)}</span><span class="dot">·</span><time class="post-time">${stamp(p.createdAt)}${p.editedAt?' · 수정됨':''}</time></div>
           <div class="post-text">${escapeHtml(p.text)}</div>
           ${getThreadRootId(p.id)===p.id && getThreadPosts(p.id).length>1 ? `<div class="thread-post-count" aria-label="딸린 쓰윗 ${getThreadPosts(p.id).length-1}개">🧵 딸린 쓰윗 ${getThreadPosts(p.id).length-1}개</div>` : ''}
           <div class="post-footer"><span class="post-count">${chars(p.text)}자${p.replyTo?' · 이어 쓴 글':''}</span>
             <div class="post-actions">
-              <button data-action="reply" data-id="${escapeHtml(p.id)}" title="이어서 쓰기">↳ 이어 쓰기</button>
-              ${getThreadRootId(p.id)===p.id?`<button data-action="open-thread" data-id="${escapeHtml(p.id)}" title="이 화면에서 쓰레드 보기">쓰레드 보기</button><button data-action="export-thread" data-id="${escapeHtml(p.id)}" title="이 쓰레드만 텍스트 원고로 저장">쓰레드 저장하기</button>`:''}
-              <button data-action="edit" data-id="${escapeHtml(p.id)}">수정</button>
-              <button class="delete" data-action="delete" data-id="${escapeHtml(p.id)}">삭제</button>
+              <button data-action="reply" data-id="${escapeHtml(p.id)}" title="이어서 쓰기">↳ 이어쓰기</button>
+              <button class="${isBookmarked(p.id)?'bookmark-active':''}" data-action="bookmark" data-id="${escapeHtml(p.id)}" title="폴더별 북마크 저장">${isBookmarked(p.id)?'🔖':'🔖'}</button>
+              ${getThreadRootId(p.id)===p.id?`<button data-action="open-thread" data-id="${escapeHtml(p.id)}" title="이 화면에서 쓰레드 보기">🧵</button><button data-action="export-thread" data-id="${escapeHtml(p.id)}" title="이 쓰레드만 텍스트 원고로 저장">💾</button>`:''}
+              <button data-action="edit" data-id="${escapeHtml(p.id)}">✏️</button>
+              <button class="delete" data-action="delete" data-id="${escapeHtml(p.id)}">❌</button>
             </div>
           </div>
           <div class="engagement" aria-label="가상 반응 수">
-            <span class="retweet" title="리쓰윗"><span>🔁</span> ${Number.isInteger(p.reposts) ? p.reposts : randomEngagement(p.text, p.createdAt, 0, 12)}</span>
-            <span class="heart" title="마음에 들어요"><span>❤️</span> ${Number.isInteger(p.likes) ? p.likes : randomEngagement(p.text, p.createdAt, 0, 37)}</span>
+            <span class="retweet" title="가상 리쓰윗 수 · 실제 공유 수가 아니야"><span>🔁</span> ${formatEngagement(Number.isInteger(p.reposts) ? p.reposts : randomEngagement(p.text, p.createdAt, 0, 12))}</span>
+            <span class="heart" title="가상 좋아요 수 · 실제 반응 수가 아니야"><span>❤️</span> ${formatEngagement(Number.isInteger(p.likes) ? p.likes : randomEngagement(p.text, p.createdAt, 0, 37))}</span>
           </div>
         </div>
       </article>`;
@@ -796,6 +896,20 @@ button{cursor:pointer;letter-spacing:-.25px}
     activeView=btn.dataset.view;
     render();
   }));
+  document.getElementById('bookmarkFolderFilter').addEventListener('change',e=>{bookmarkFolderFilter=e.target.value;render();});
+  document.getElementById('manageBookmarkFolders').addEventListener('click',()=>{renderBookmarkManageFolders();bookmarkManageModal.hidden=false;document.getElementById('bookmarkManageFolder').focus();});
+  document.getElementById('bookmarkManageClose').addEventListener('click',closeBookmarkManageModal);
+  document.getElementById('bookmarkManageDone').addEventListener('click',closeBookmarkManageModal);
+  bookmarkManageModal.addEventListener('click',e=>{if(e.target===bookmarkManageModal)closeBookmarkManageModal();});
+  document.getElementById('bookmarkRenameFolder').addEventListener('click',()=>{const oldName=document.getElementById('bookmarkManageFolder').value;if(!oldName)return;const typed=prompt(`‘${oldName}’ 폴더의 새 이름을 입력해 줘.`,oldName);if(typed===null)return;const newName=typed.trim();if(!newName){alert('폴더 이름은 비워 둘 수 없어.');return;}if(newName===oldName){return;}if(bookmarkFolders.includes(newName)){alert('이미 있는 폴더 이름이야.');return;}bookmarkFolders=bookmarkFolders.map(f=>f===oldName?newName:f);bookmarks=bookmarks.map(b=>b.folder===oldName?{...b,folder:newName}:b);if(bookmarkFolderFilter===oldName)bookmarkFolderFilter=newName;saveBookmarks();renderBookmarkManageFolders();renderBookmarkFolderFilter();render();toast('폴더 이름을 변경했어.');});
+  document.getElementById('bookmarkDeleteFolder').addEventListener('click',()=>{const folder=document.getElementById('bookmarkManageFolder').value;if(!folder)return;const count=bookmarks.filter(b=>b.folder===folder).length;const message=count?`‘${folder}’ 폴더를 삭제할까?\n\n이 폴더에 저장된 쓰윗 ${count}개의 북마크도 모두 해제돼.\n삭제한 폴더와 북마크는 복구할 수 없어.`:`‘${folder}’ 폴더를 삭제할까?\n\n이 폴더에는 저장된 북마크가 없어.`;if(!confirm(message))return;bookmarkFolders=bookmarkFolders.filter(f=>f!==folder);bookmarks=bookmarks.filter(b=>b.folder!==folder);if(bookmarkFolderFilter===folder)bookmarkFolderFilter='all';saveBookmarks();renderBookmarkManageFolders();renderBookmarkFolderFilter();render();toast(count?`폴더와 북마크 ${count}개를 삭제했어.`:'폴더를 삭제했어.');});
+  document.getElementById('createBookmarkFolder').addEventListener('click',()=>{const name=prompt('새 북마크 폴더 이름을 입력해 줘.');if(name===null)return;const folder=name.trim();if(!folder){alert('폴더 이름을 입력해 줘.');return;}if(bookmarkFolders.includes(folder)){alert('이미 있는 폴더야.');return;}bookmarkFolders.push(folder);bookmarkFolderFilter=folder;saveBookmarks();render();toast('북마크 폴더를 만들었어.');});
+  document.getElementById('bookmarkSaveClose').addEventListener('click',closeBookmarkSaveModal);
+  document.getElementById('bookmarkSaveCancel').addEventListener('click',closeBookmarkSaveModal);
+  bookmarkSaveModal.addEventListener('click',e=>{if(e.target===bookmarkSaveModal)closeBookmarkSaveModal();});
+  document.getElementById('bookmarkSaveNewFolder').addEventListener('click',()=>{const name=prompt('새 북마크 폴더 이름을 입력해 줘.');if(name===null)return;const folder=name.trim();if(!folder){alert('폴더 이름을 입력해 줘.');return;}if(bookmarkFolders.includes(folder)){alert('이미 있는 폴더야.');renderBookmarkSaveFolders();document.getElementById('bookmarkSaveFolder').value=folder;return;}bookmarkFolders.push(folder);bookmarkFolderFilter=folder;saveBookmarks();renderBookmarkFolderFilter();renderBookmarkSaveFolders();document.getElementById('bookmarkSaveFolder').value=folder;toast('북마크 폴더를 만들었어.');});
+  document.getElementById('bookmarkSaveConfirm').addEventListener('click',()=>{if(!bookmarkPendingPostId)return;const folder=document.getElementById('bookmarkSaveFolder').value;if(!folder||!bookmarkFolders.includes(folder)){alert('저장할 폴더를 선택해 줘.');return;}bookmarks.push({postId:bookmarkPendingPostId,folder,createdAt:Date.now()});saveBookmarks();closeBookmarkSaveModal();render();toast('북마크에 저장했어.');});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!bookmarkSaveModal.hidden)closeBookmarkSaveModal();if(e.key==='Escape'&&!bookmarkManageModal.hidden)closeBookmarkManageModal();});
   document.getElementById('indexQuery').addEventListener('input',e=>{
     indexQuery=e.target.value;
     render();
@@ -842,7 +956,7 @@ button{cursor:pointer;letter-spacing:-.25px}
     const b=e.target.closest('button[data-action]');if(!b)return;
     const id=b.dataset.id;
     switch(b.dataset.action){
-      case 'reply':replyPost(id);break;case 'edit':editPost(id);break;
+      case 'reply':replyPost(id);break;case 'edit':editPost(id);break;case 'bookmark':toggleBookmark(id);break;
       case 'export-thread':exportThread(getThreadRootId(id));break;
       case 'delete':deletePost(id);break;
     }
@@ -852,7 +966,7 @@ button{cursor:pointer;letter-spacing:-.25px}
   homeBrand.addEventListener('click',goHome);
   homeBrand.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();goHome();}});
   function createBackupObject(){
-    return { app:'Thwitter', backupVersion:1, exportedAt:new Date().toISOString(), profile:{...profile}, posts:posts };
+    return { app:'Thwitter', backupVersion:1, exportedAt:new Date().toISOString(), profile:{...profile}, posts:posts, bookmarks:bookmarks, bookmarkFolders:bookmarkFolders };
   }
   function downloadFullBackup(){
     const backup = createBackupObject();
@@ -893,6 +1007,9 @@ button{cursor:pointer;letter-spacing:-.25px}
       if(!confirmed) return;
       if(posts.length) downloadFullBackup();
       posts=restored;
+      bookmarks=Array.isArray(parsed.bookmarks)?parsed.bookmarks.filter(b=>b&&typeof b.postId==='string'&&seenIds.has(b.postId)&&typeof b.folder==='string').map(b=>({postId:b.postId,folder:b.folder,createdAt:Number(b.createdAt)||Date.now()})):[];
+      bookmarkFolders=Array.isArray(parsed.bookmarkFolders)?[...new Set(parsed.bookmarkFolders.filter(f=>typeof f==='string'&&f.trim()).map(f=>f.trim()))]:['기본 폴더'];
+          saveBookmarks();
       if(parsed.profile && typeof parsed.profile === 'object'){
         const pn=typeof parsed.profile.name==='string'&&parsed.profile.name.trim()?parsed.profile.name.trim():DEFAULT_PROFILE.name;
         const ph=typeof parsed.profile.handle==='string'?parsed.profile.handle.replace(/^@/,'').toLowerCase():DEFAULT_PROFILE.handle;
@@ -910,8 +1027,11 @@ button{cursor:pointer;letter-spacing:-.25px}
   });
   document.getElementById('clearBtn').addEventListener('click',()=>{
     if(!posts.length){toast('이미 비어 있어.');return;}
-    if(!confirm('모든 쓰윗을 삭제할까? 이 작업은 되돌릴 수 없어.'))return;
-    posts=[];resetComposer();save();toast('타임라인을 비웠어.');
+    const count=posts.length;
+    if(!confirm(`⚠️ 쓰윗 청소\n\n저장된 쓰윗 ${count}개가 모두 삭제돼. 딸린 쓰윗도 전부 사라지고, 이 작업은 되돌릴 수 없어.\n\n실수 방지를 위해 다음 단계에서 확인 문구를 직접 입력해야 해. 계속할까?`))return;
+    const confirmation=prompt('마지막 확인이야. 삭제를 진행하려면 아래 문구를 그대로 입력해 줘.\n\n쓰윗 청소');
+    if(confirmation!=='쓰윗 청소'){toast('확인 문구가 일치하지 않아 청소를 취소했어.');return;}
+    posts=[];bookmarks=[];saveBookmarks();resetComposer();save();toast('쓰윗 청소를 완료했어.');
   });
   const profileModal=document.getElementById('profileModal');
   const profileNameInput=document.getElementById('profileName');
@@ -927,6 +1047,7 @@ button{cursor:pointer;letter-spacing:-.25px}
   const profileHeaderSolidColorInput=document.getElementById('profileHeaderSolidColor');
   function openProfileModal(){
     profileNameInput.value=profile.name;
+    document.getElementById('profileVerified').checked=profile.verified===true;
     profileHandleInput.value=profile.handle;
     profileEmojiInput.value=profile.emoji;
     profileAvatarTextInput.value=profile.avatarText||'';
@@ -1013,7 +1134,7 @@ button{cursor:pointer;letter-spacing:-.25px}
     if(!name){alert('표시 이름을 입력해 줘.');profileNameInput.focus();return;}
     if(!handle||!/^[a-z0-9_]{1,20}$/.test(handle)){alert('아이디는 영문 소문자, 숫자, 밑줄(_)로 1~20자 입력해 줘.');profileHandleInput.focus();return;}
     const headerMode=document.querySelector('[data-header-mode].active')?.dataset.headerMode || 'gradient';
-    profile={name,handle,emoji:emoji||'🧶',avatarMode,avatarText,avatarBg:profileAvatarColorInput.value,avatarFg:profileAvatarTextColorInput.value,bio,headerMode,headerStart:profileHeaderColorInput.value,headerEnd:profileHeaderEndColorInput.value,headerSolid:profileHeaderSolidColorInput.value,headerColor:profileHeaderSolidColorInput.value};
+    profile={name,handle,emoji:emoji||'🧶',avatarMode,avatarText,avatarBg:profileAvatarColorInput.value,avatarFg:profileAvatarTextColorInput.value,bio,verified:document.getElementById('profileVerified').checked,headerMode,headerStart:profileHeaderColorInput.value,headerEnd:profileHeaderEndColorInput.value,headerSolid:profileHeaderSolidColorInput.value,headerColor:profileHeaderSolidColorInput.value};
     persistProfile();
     applyProfile();
     closeProfileModal();render();toast('프로필을 저장했어. 이전 쓰윗에도 적용됐어.');
